@@ -4,6 +4,7 @@
   "description": "Transform selected text using the powerful sttr CLI utility",
   "version": "0.1.0",
   "publisher": "your-publisher-name",
+  "license": "MIT",
   "engines": {
     "vscode": "^1.104.0"
   },
