@@ -1,0 +1,78 @@
+{
+  "name": "sttr",
+  "displayName": "STTR - String Transformer",
+  "description": "Transform selected text using the powerful sttr CLI utility",
+  "version": "0.1.0",
+  "publisher": "your-publisher-name",
+  "engines": {
+    "vscode": "^1.104.0"
+  },
+  "categories": [
+    "Other",
+    "Formatters"
+  ],
+  "keywords": [
+    "string",
+    "transform",
+    "encode",
+    "decode",
+    "hash",
+    "format"
+  ],
+  "activationEvents": [],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "sttr.transformText",
+        "title": "Transform Text",
+        "category": "STTR"
+      },
+      {
+        "command": "sttr.showCommands",
+        "title": "Show Available Transformations",
+        "category": "STTR"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "command": "sttr.transformText",
+          "when": "editorHasSelection",
+          "group": "1_modification@1"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "package": "npm run compile",
+    "compile-tests": "tsc -p . --outDir out",
+    "watch-tests": "tsc -p . -w --outDir out",
+    "pretest": "npm run compile-tests && npm run compile && npm run lint",
+    "check-types": "tsc --noEmit",
+    "lint": "eslint src",
+    "test": "vscode-test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/vscode-sttr.git"
+  },
+  "bugs": {
+    "url": "https://github.com/your-username/vscode-sttr/issues"
+  },
+  "homepage": "https://github.com/your-username/vscode-sttr#readme",
+  "devDependencies": {
+    "@types/mocha": "^10.0.10",
+    "@types/node": "22.x",
+    "@types/vscode": "^1.104.0",
+    "@typescript-eslint/eslint-plugin": "^8.45.0",
+    "@typescript-eslint/parser": "^8.45.0",
+    "@vscode/test-cli": "^0.0.11",
+    "@vscode/test-electron": "^2.5.2",
+    "eslint": "^9.36.0",
+    "typescript": "^5.9.3"
+  }
+}
