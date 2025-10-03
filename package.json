@@ -3,7 +3,7 @@
   "displayName": "STTR - String Transformer",
   "description": "Transform selected text using the powerful sttr CLI utility",
   "version": "0.1.0",
-  "publisher": "your-publisher-name",
+  "publisher": "alex-svetkin",
   "license": "MIT",
   "engines": {
     "vscode": "^1.104.0"
@@ -59,12 +59,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/your-username/vscode-sttr.git"
+    "url": "https://github.com/whisk/vscode-sttr.git"
   },
   "bugs": {
-    "url": "https://github.com/your-username/vscode-sttr/issues"
+    "url": "https://github.com/whisk/vscode-sttr/issues"
   },
-  "homepage": "https://github.com/your-username/vscode-sttr#readme",
+  "homepage": "https://github.com/whisk/vscode-sttr#readme",
   "devDependencies": {
     "@types/mocha": "^10.0.10",
     "@types/node": "22.x",
@@ -74,6 +74,7 @@
     "@vscode/test-cli": "^0.0.11",
     "@vscode/test-electron": "^2.5.2",
     "eslint": "^9.36.0",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "@vscode/vsce": "^3.2.1"
   }
 }
