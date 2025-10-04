@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import * as cp from 'child_process';
 import * as fs from 'fs';
+import * as path from 'path';
 
 // STTR transformation categories and commands
 const STTR_COMMANDS = {
@@ -214,10 +215,11 @@ After installation, restart VS Code and try the STTR commands again.`;
 	} else if (platform === 'win32') {
 		instructions = `# Install STTR on Windows
 
-## Winget
+## Winget (Recommended)
 \`\`\`cmd
 winget install -e --id abhimanyu003.sttr
 \`\`\`
+*The extension will automatically detect WinGet installations.*
 
 ## Scoop
 \`\`\`powershell
@@ -343,9 +345,29 @@ async function getSttrBinaryPath(): Promise<string | null> {
 					tryCommand(commands[tried]);
 				} else {
 					// Try common installation paths
-					const commonPaths = process.platform === 'win32'
-						? ['C:\\Program Files\\sttr\\sttr.exe', 'C:\\sttr\\sttr.exe']
-						: ['/usr/local/bin/sttr', '/opt/homebrew/bin/sttr', '/usr/bin/sttr', `${process.env.HOME}/.local/bin/sttr`, `${process.env.HOME}/go/bin/sttr`];
+					let commonPaths: string[] = [];
+
+					if (process.platform === 'win32') {
+						const userProfile = process.env.USERPROFILE || process.env.HOME;
+						commonPaths = [
+							'C:\\Program Files\\sttr\\sttr.exe',
+							'C:\\sttr\\sttr.exe'
+						];
+
+						// Add WinGet installation paths
+						if (userProfile) {
+							const wingetPackagesDir = path.join(userProfile, 'AppData', 'Local', 'Microsoft', 'WinGet', 'Packages');
+
+							// Try the exact path
+							commonPaths.push(path.join(wingetPackagesDir, 'abhimanyu003.sttr_Microsoft.Winget.Source_8wekyb3d8bbwe', 'sttr.exe'));
+						}
+					} else {
+						commonPaths = [
+							'/usr/local/bin/sttr',
+							'/opt/homebrew/bin/sttr',
+							'/usr/bin/sttr',
+						];
+					}
 
 					for (const tryPath of commonPaths) {
 						if (fs.existsSync(tryPath)) {

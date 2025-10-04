@@ -1,6 +1,8 @@
 # Change Log
 
-## [0.1.2] - 2025-10-04
+## [0.1.3] - 2025-10-04
+
+Better paths support for Windows.s
 
 Minor package updates.
 
