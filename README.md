@@ -1,4 +1,4 @@
-# STTR - String Transformer for VS Code
+# STTR - String Transform for VS Code
 
 Transform selected text using the powerful [sttr CLI utility](https://github.com/abhimanyu003/sttr) directly within VS Code.
 
@@ -94,18 +94,12 @@ For more installation options, visit the [sttr GitHub repository](https://github
 
 ## Extension Settings
 
-This extension does not contribute any VS Code settings. All transformations are handled by the sttr CLI utility.
+This extension does not contribute any VS Code settings.
 
 ## Known Issues
 
 - The sttr CLI utility must be installed and available in your system PATH
 - Some transformations may not work with empty or invalid input
-
-## Release Notes
-
-### 0.1.0
-
-Initial release of STTR - String Transformer extension.
 
 ## Contributing
 
