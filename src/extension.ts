@@ -13,86 +13,30 @@ export const fsUtils = {
 };
 
 // STTR transformation categories and commands
-const STTR_COMMANDS = {
-	'Encode/Decode': [
-		{ label: 'ASCII85 Encode', command: 'ascii85-encode', description: 'Encode text to ASCII85' },
-		{ label: 'ASCII85 Decode', command: 'ascii85-decode', description: 'Decode ASCII85 text' },
-		{ label: 'Base32 Encode', command: 'base32-encode', description: 'Encode text to Base32' },
-		{ label: 'Base32 Decode', command: 'base32-decode', description: 'Decode Base32 text' },
-		{ label: 'Base64 Encode', command: 'base64-encode', description: 'Encode text to Base64' },
-		{ label: 'Base64 Decode', command: 'base64-decode', description: 'Decode Base64 text' },
-		{ label: 'Base85 Encode', command: 'base85-encode', description: 'Encode text to Base85' },
-		{ label: 'Base85 Decode', command: 'base85-decode', description: 'Decode Base85 text' },
-		{ label: 'Base64 URL Encode', command: 'base64url-encode', description: 'Encode text to Base64 URL' },
-		{ label: 'Base64 URL Decode', command: 'base64url-decode', description: 'Decode Base64 URL text' },
-		{ label: 'HTML Encode', command: 'html-encode', description: 'Escape HTML entities' },
-		{ label: 'HTML Decode', command: 'html-decode', description: 'Unescape HTML entities' },
-		{ label: 'URL Encode', command: 'url-encode', description: 'Encode URL entities' },
-		{ label: 'URL Decode', command: 'url-decode', description: 'Decode URL entities' },
-		{ label: 'ROT13 Encode', command: 'rot13-encode', description: 'Encode text to ROT13' },
-		{ label: 'Morse Encode', command: 'morse-encode', description: 'Encode text to Morse code' },
-		{ label: 'Morse Decode', command: 'morse-decode', description: 'Decode Morse code' },
-		{ label: 'Hex Encode', command: 'hex-encode', description: 'Encode text to Hex' },
-		{ label: 'Hex Decode', command: 'hex-decode', description: 'Decode Hex to text' }
-	],
-	'Hash': [
-		{ label: 'MD5', command: 'md5', description: 'Generate MD5 hash' },
-		{ label: 'SHA1', command: 'sha1', description: 'Generate SHA1 hash' },
-		{ label: 'SHA256', command: 'sha256', description: 'Generate SHA256 hash' },
-		{ label: 'SHA512', command: 'sha512', description: 'Generate SHA512 hash' },
-		{ label: 'BCrypt', command: 'bcrypt', description: 'Generate BCrypt hash' },
-		{ label: 'XXH64', command: 'xxh64', description: 'Generate XXH64 hash' }
-	],
-	'String Case': [
-		{ label: 'camelCase', command: 'camel', description: 'Transform to camelCase' },
-		{ label: 'PascalCase', command: 'pascal', description: 'Transform to PascalCase' },
-		{ label: 'kebab-case', command: 'kebab', description: 'Transform to kebab-case' },
-		{ label: 'snake_case', command: 'snake', description: 'Transform to snake_case' },
-		{ label: 'slug-case', command: 'slug', description: 'Transform to slug-case' },
-		{ label: 'UPPER CASE', command: 'upper', description: 'Transform to UPPER CASE' },
-		{ label: 'lower case', command: 'lower', description: 'Transform to lower case' },
-		{ label: 'Title Case', command: 'title', description: 'Transform to Title Case' },
-		{ label: 'Reverse Text', command: 'reverse', description: 'Reverse text' }
-	],
-	'Lines': [
-		{ label: 'Count Lines', command: 'count-lines', description: 'Count number of lines' },
-		{ label: 'Reverse Lines', command: 'reverse-lines', description: 'Reverse line order' },
-		{ label: 'Shuffle Lines', command: 'shuffle-lines', description: 'Shuffle lines randomly' },
-		{ label: 'Sort Lines', command: 'sort-lines', description: 'Sort lines alphabetically' },
-		{ label: 'Unique Lines', command: 'unique-lines', description: 'Get unique lines' },
-		{ label: 'Number Lines', command: 'number-lines', description: 'Add line numbers' }
-	],
-	'Format': [
-		{ label: 'Format JSON', command: 'json', description: 'Format text as JSON' },
-		{ label: 'JSON to YAML', command: 'json-yaml', description: 'Convert JSON to YAML' },
-		{ label: 'YAML to JSON', command: 'yaml-json', description: 'Convert YAML to JSON' },
-		{ label: 'JSON Escape', command: 'json-escape', description: 'Escape JSON string' },
-		{ label: 'JSON Unescape', command: 'json-unescape', description: 'Unescape JSON string' },
-		{ label: 'Markdown to HTML', command: 'markdown-html', description: 'Convert Markdown to HTML' }
-	],
-	'Extract': [
-		{ label: 'Extract Emails', command: 'extract-emails', description: 'Extract email addresses' },
-		{ label: 'Extract URLs', command: 'extract-urls', description: 'Extract URLs' },
-		{ label: 'Extract IPs', command: 'extract-ip', description: 'Extract IP addresses' }
-	],
-	'Count': [
-		{ label: 'Count Characters', command: 'count-chars', description: 'Count characters' },
-		{ label: 'Count Words', command: 'count-words', description: 'Count words' },
-		{ label: 'Count Lines', command: 'count-lines', description: 'Count lines' }
-	],
-	'Color': [
-		{ label: 'Hex to RGB', command: 'hex-rgb', description: 'Convert hex color to RGB' }
-	],
-	'Other': [
-		{ label: 'Remove Spaces', command: 'remove-spaces', description: 'Remove all spaces and newlines' },
-		{ label: 'Remove Newlines', command: 'remove-newlines', description: 'Remove all newlines' },
-		{ label: 'Escape Quotes', command: 'escape-quotes', description: 'Escape single and double quotes' },
-		{ label: 'Zero Pad', command: 'zeropad', description: 'Pad number with zeros' }
-	]
-};
+interface SttrCommand {
+	label: string;
+	command: string;
+	description: string;
+}
+
+interface SttrCommandMap {
+	[category: string]: SttrCommand[];
+}
+
+let currentSttrCommands: SttrCommandMap = {};
+const COMMANDS_STORAGE_KEY = 'sttr_commands_v1';
 
 export function activate(context: vscode.ExtensionContext) {
 	console.log('STTR extension is now active!');
+
+	// Load commands from storage
+	const cachedCommands = context.globalState.get<SttrCommandMap>(COMMANDS_STORAGE_KEY);
+	if (cachedCommands) {
+		currentSttrCommands = cachedCommands;
+	} else {
+		// If no cache, try to refresh in background but don't block
+		refreshSttrCommands(context).catch(err => console.error('Failed to refresh commands:', err));
+	}
 
 	// Register transform text command
 	const transformTextCommand = vscode.commands.registerCommand('sttr.transformText', async () => {
@@ -117,14 +61,130 @@ export function activate(context: vscode.ExtensionContext) {
 		await showAllCommands();
 	});
 
-	context.subscriptions.push(transformTextCommand, showCommandsCommand);
+	// Register refresh commands command
+	const refreshCommandsCommand = vscode.commands.registerCommand('sttr.refreshCommands', async () => {
+		await vscode.window.withProgress({
+			location: vscode.ProgressLocation.Notification,
+			title: 'Refreshing STTR commands...',
+			cancellable: false
+		}, async () => {
+			await refreshSttrCommands(context);
+		});
+	});
+
+	context.subscriptions.push(transformTextCommand, showCommandsCommand, refreshCommandsCommand);
+}
+
+async function refreshSttrCommands(context: vscode.ExtensionContext) {
+	try {
+		const sttrPath = await getSttrBinaryPath();
+		if (!sttrPath) {
+			return; // Can't refresh if binary not found
+		}
+
+		const output = await new Promise<string>((resolve, reject) => {
+			cpUtils.exec(`${sttrPath} -h`, (err, stdout) => {
+				if (err) {
+					reject(err);
+				} else {
+					resolve(stdout);
+				}
+			});
+		});
+
+		const newCommands = parseSttrHelpOutput(output);
+		if (Object.keys(newCommands).length > 0) {
+			currentSttrCommands = newCommands;
+			await context.globalState.update(COMMANDS_STORAGE_KEY, newCommands);
+		}
+	} catch (error) {
+		console.error('Error refreshing STTR commands:', error);
+	}
+}
+
+export function parseSttrHelpOutput(output: string): SttrCommandMap {
+	const lines = output.split('\n');
+	const commands: SttrCommandMap = {};
+	let inCommandsSection = false;
+
+	// Helper to find category for a command
+	const findCategory = (cmd: string, desc: string): string => {
+		// Heuristics for new commands
+		const lowerCmd = cmd.toLowerCase();
+		const lowerDesc = desc.toLowerCase();
+
+		if (lowerCmd.includes('encode') || lowerCmd.includes('decode')) { return 'Encode/Decode'; }
+		if (lowerDesc.includes('hash') || lowerDesc.includes('checksum') || lowerDesc.includes('digest')) { return 'Hash'; }
+		if (lowerCmd.includes('case') || lowerCmd.includes('upper') || lowerCmd.includes('lower') || lowerCmd.includes('snake') || lowerCmd.includes('camel') || lowerCmd.includes('slug')) { return 'String Case'; }
+		if (lowerCmd.includes('lines')) { return 'Lines'; }
+		if (lowerCmd.includes('json') || lowerCmd.includes('yaml') || lowerCmd.includes('xml')) { return 'Format'; }
+		if (lowerCmd.includes('extract')) { return 'Extract'; }
+		if (lowerCmd.includes('count')) { return 'Count'; }
+		if (lowerCmd.includes('color') || lowerCmd.includes('rgb') || lowerCmd.includes('hex')) { return 'Color'; }
+		if (lowerCmd.includes('sort') || lowerCmd.includes('unique') || lowerCmd.includes('shuffle') || lowerCmd.includes('reverse')) { return 'Lines'; }
+
+		return 'Other';
+	};
+
+	for (const line of lines) {
+		if (line.trim().startsWith('Available Commands:')) {
+			inCommandsSection = true;
+			continue;
+		}
+		if (line.trim().startsWith('Flags:') || (inCommandsSection && line.trim() === '')) {
+			inCommandsSection = false;
+			continue;
+		}
+
+		if (inCommandsSection) {
+			const match = line.match(/^\s+([a-zA-Z0-9.-]+)\s+(.+)$/);
+			if (match) {
+				const [, cmd, desc] = match;
+
+				// Generate label: "ascii85-encode" -> "Ascii85 Encode"
+				const label = cmd
+					.split(/[-_]/)
+					.map(word => word.charAt(0).toUpperCase() + word.slice(1))
+					.join(' ');
+
+				const category = findCategory(cmd, desc);
+
+				if (!commands[category]) {
+					commands[category] = [];
+				}
+
+				commands[category].push({
+					label,
+					command: cmd,
+					description: desc.trim()
+				});
+			}
+		}
+	}
+
+	return commands;
 }
 
 async function showTransformationMenu(selectedText: string, editor: vscode.TextEditor, selection: vscode.Selection) {
+	// Check if we have commands
+	if (Object.keys(currentSttrCommands).length === 0) {
+		const action = await vscode.window.showWarningMessage(
+			'No STTR commands loaded. Try refreshing or check installation.',
+			'Refresh Commands',
+			'Install Instructions'
+		);
+		if (action === 'Refresh Commands') {
+			vscode.commands.executeCommand('sttr.refreshCommands');
+		} else if (action === 'Install Instructions') {
+			showInstallInstructions();
+		}
+		return;
+	}
+
 	// Create quick pick items from all categories
 	const items: vscode.QuickPickItem[] = [];
 
-	for (const [category, commands] of Object.entries(STTR_COMMANDS)) {
+	for (const [category, commands] of Object.entries(currentSttrCommands)) {
 		// Add category separator
 		items.push({
 			label: `$(folder) ${category}`,
@@ -132,6 +192,9 @@ async function showTransformationMenu(selectedText: string, editor: vscode.TextE
 		});
 
 		// Add commands in this category
+		// Sort commands alphabetically within category
+		commands.sort((a, b) => a.label.localeCompare(b.label));
+
 		for (const cmd of commands) {
 			items.push({
 				label: `$(symbol-string) ${cmd.label}`,
@@ -155,9 +218,20 @@ async function showTransformationMenu(selectedText: string, editor: vscode.TextE
 }
 
 async function showAllCommands() {
+	if (Object.keys(currentSttrCommands).length === 0) {
+		const action = await vscode.window.showWarningMessage(
+			'No STTR commands loaded.',
+			'Refresh Commands'
+		);
+		if (action === 'Refresh Commands') {
+			vscode.commands.executeCommand('sttr.refreshCommands');
+		}
+		return;
+	}
+
 	const items: string[] = [];
 
-	for (const [category, commands] of Object.entries(STTR_COMMANDS)) {
+	for (const [category, commands] of Object.entries(currentSttrCommands)) {
 		items.push(`\n**${category}:**`);
 		for (const cmd of commands) {
 			items.push(`• ${cmd.label} (\`sttr ${cmd.command}\`) - ${cmd.description}`);

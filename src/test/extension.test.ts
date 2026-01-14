@@ -47,9 +47,23 @@ suite('Extension Test Suite', () => {
 			command: 'upper'
 		} as any);
 
-		// Stub cpUtils.exec to find sttr binary
+		// Stub cpUtils.exec to find sttr binary and return help
 		const execStub = sandbox.stub(myExtension.cpUtils, 'exec');
-		execStub.yields(null, '/bin/sttr');
+		execStub.callsFake(((cmd: string, callback: (error: Error | null, stdout: string) => void) => {
+			if (cmd.includes('-h')) {
+				const helpOutput = `
+Available Commands:
+  upper                   Transform to UPPER CASE
+`;
+				callback(null, helpOutput);
+			} else {
+				// checking binary
+				callback(null, '/bin/sttr');
+			}
+		}) as any);
+
+		// Force refresh commands so it populates using our stub
+		await vscode.commands.executeCommand('sttr.refreshCommands');
 
 		// Stub cpUtils.spawn to simulate sttr execution
 		const spawnStub = sandbox.stub(myExtension.cpUtils, 'spawn');
@@ -119,6 +133,32 @@ suite('Extension Test Suite', () => {
 		assert.ok(showErrorMessageStub.called, 'showErrorMessage should be called');
 		// Check the first argument of the first call
 		const errorMsg = showErrorMessageStub.firstCall.args[0] as string;
-		assert.match(errorMsg, /STTR binary not found/, 'Error message should match expected');
+		assert.match(errorMsg, /STTR binary not found/, 'Error message should matching expected');
+	});
+
+	test('parseSttrHelpOutput should parse valid help output', () => {
+		const helpOutput = `
+STTR - A cross-platform, cli app to perform various operations on string
+Usage:
+  sttr [flags]
+  sttr [command]
+
+Available Commands:
+  adler32                 Get the Adler32 checksum of your text
+  ascii85-decode          Decode your text to Ascii85 ( Base85 ) text
+  camel                   Transform your text to camelCase
+  json                    Format your text as JSON
+
+Flags:
+  -h, --help      help for sttr
+  -v, --version   version for sttr
+`;
+		// @ts-ignore - access exported function even if TS might complain about module augmentation in tests
+		const map = myExtension.parseSttrHelpOutput(helpOutput);
+
+		assert.ok(map['Hash'] && map['Hash'].some(c => c.command === 'adler32'), 'Should categorize adler32 as Hash');
+		assert.ok(map['Encode/Decode'] && map['Encode/Decode'].some(c => c.command === 'ascii85-decode'), 'Should categorize ascii85-decode as Encode/Decode');
+		assert.ok(map['String Case'] && map['String Case'].some(c => c.command === 'camel'), 'Should categorize camel as String Case');
+		assert.ok(map['Format'] && map['Format'].some(c => c.command === 'json'), 'Should categorize json as Format');
 	});
 });
