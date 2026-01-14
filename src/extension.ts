@@ -3,6 +3,15 @@ import * as cp from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
 
+export const cpUtils = {
+	spawn: cp.spawn,
+	exec: cp.exec
+};
+
+export const fsUtils = {
+	existsSync: fs.existsSync
+};
+
 // STTR transformation categories and commands
 const STTR_COMMANDS = {
 	'Encode/Decode': [
@@ -282,7 +291,7 @@ async function executeSttrCommand(command: string, inputText: string, editor: vs
 
 		// Execute sttr command
 		const result = await new Promise<string>((resolve, reject) => {
-			const process = cp.spawn(sttrPath, [command], {
+			const process = cpUtils.spawn(sttrPath, [command], {
 				stdio: ['pipe', 'pipe', 'pipe']
 			});
 
@@ -334,7 +343,7 @@ async function getSttrBinaryPath(): Promise<string | null> {
 		let tried = 0;
 
 		const tryCommand = (cmd: string) => {
-			cp.exec(cmd, (error, stdout) => {
+			cpUtils.exec(cmd, (error, stdout) => {
 				if (!error && stdout.trim()) {
 					resolve(stdout.trim());
 					return;
@@ -370,7 +379,7 @@ async function getSttrBinaryPath(): Promise<string | null> {
 					}
 
 					for (const tryPath of commonPaths) {
-						if (fs.existsSync(tryPath)) {
+						if (fsUtils.existsSync(tryPath)) {
 							resolve(tryPath);
 							return;
 						}
