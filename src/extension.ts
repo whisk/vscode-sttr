@@ -407,8 +407,13 @@ async function executeSttrCommand(command: string, inputText: string, editor: vs
 		});
 
 		// Replace selected text with transformed result
+		// Only trim trailing newline potentially added by CLI, preserve other whitespace
+		const finalResult = result.endsWith('\n') ? result.slice(0, -1) : result;
+		// Also handle Windows \r\n
+		const fixedResult = finalResult.endsWith('\r') ? finalResult.slice(0, -1) : finalResult;
+
 		await editor.edit(editBuilder => {
-			editBuilder.replace(selection, result.trim());
+			editBuilder.replace(selection, fixedResult);
 		});
 
 		vscode.window.showInformationMessage(`Text transformed using: sttr ${command}`);

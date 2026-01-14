@@ -161,4 +161,51 @@ Flags:
 		assert.ok(map['String Case'] && map['String Case'].some(c => c.command === 'camel'), 'Should categorize camel as String Case');
 		assert.ok(map['Format'] && map['Format'].some(c => c.command === 'json'), 'Should categorize json as Format');
 	});
+
+	test('sttr.transformText should preserve leading whitespace', async () => {
+		// Create a new document with leading spaces
+		const document = await vscode.workspace.openTextDocument({
+			content: '  hello world',
+			language: 'plaintext'
+		});
+		const editor = await vscode.window.showTextDocument(document);
+
+		// Select all text including leading spaces
+		editor.selection = new vscode.Selection(0, 0, 0, 13);
+
+		// Stub QuickPick
+		sandbox.stub(vscode.window, 'showQuickPick').resolves({
+			label: 'UPPER CASE',
+			command: 'upper'
+		} as any);
+
+		// Stub binary finding
+		sandbox.stub(myExtension.cpUtils, 'exec').yields(null, '/bin/sttr');
+
+		// Stub spawn
+		const spawnStub = sandbox.stub(myExtension.cpUtils, 'spawn');
+		const mockChildProcess = new EventEmitter() as any;
+		mockChildProcess.stdout = new EventEmitter();
+		mockChildProcess.stderr = new EventEmitter();
+		mockChildProcess.stdin = {
+			write: sandbox.stub(),
+			end: sandbox.stub()
+		};
+		mockChildProcess.kill = sandbox.stub();
+		spawnStub.returns(mockChildProcess);
+
+		// Execute
+		const commandPromise = vscode.commands.executeCommand('sttr.transformText');
+		await new Promise(resolve => setTimeout(resolve, 50));
+
+		// Emit result with leading spaces (and maybe a trailing newline which sttr might output)
+		mockChildProcess.stdout.emit('data', '  HELLO WORLD\n');
+		mockChildProcess.emit('close', 0);
+
+		await commandPromise;
+
+		// Verify result - leading spaces should be preserved
+		const text = editor.document.getText();
+		assert.strictEqual(text, '  HELLO WORLD');
+	});
 });
