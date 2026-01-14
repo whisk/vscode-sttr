@@ -2,7 +2,7 @@
   "name": "sttr",
   "displayName": "STTR - String Transformer",
   "description": "Transform selected text using the powerful sttr CLI utility",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "publisher": "alex-svetkin",
   "license": "MIT",
   "engines": {

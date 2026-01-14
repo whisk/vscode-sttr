@@ -1,6 +1,6 @@
 # Change Log
 
-## [0.2.0] - 2026-01-15
+## [0.2.1] - 2026-01-15
 
 - **Feature**: Dynamic command discovery. The extension now reads available transformations directly from the `sttr` CLI tool instead of using a hardcoded list.
 - **Feature**: Automatically refresh available commands when the extension is updated.
