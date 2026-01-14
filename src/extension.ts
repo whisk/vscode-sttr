@@ -25,17 +25,26 @@ interface SttrCommandMap {
 
 let currentSttrCommands: SttrCommandMap = {};
 const COMMANDS_STORAGE_KEY = 'sttr_commands_v1';
+const EXTENSION_VERSION_KEY = 'sttr_extension_version';
 
 export function activate(context: vscode.ExtensionContext) {
 	console.log('STTR extension is now active!');
+
+	const currentVersion = context.extension.packageJSON.version;
+	const storedVersion = context.globalState.get<string>(EXTENSION_VERSION_KEY);
 
 	// Load commands from storage
 	const cachedCommands = context.globalState.get<SttrCommandMap>(COMMANDS_STORAGE_KEY);
 	if (cachedCommands) {
 		currentSttrCommands = cachedCommands;
-	} else {
-		// If no cache, try to refresh in background but don't block
-		refreshSttrCommands(context).catch(err => console.error('Failed to refresh commands:', err));
+	}
+
+	// Check if updated
+	if (currentVersion !== storedVersion) {
+		console.log(`Extension updated (prev: ${storedVersion}, now: ${currentVersion}). Refreshing commands...`);
+		refreshSttrCommands(context).then(() => {
+			context.globalState.update(EXTENSION_VERSION_KEY, currentVersion);
+		}).catch(err => console.error('Failed to refresh commands:', err));
 	}
 
 	// Register transform text command
